@@ -7,9 +7,10 @@ using namespace std;
 
 ifstream in("date.in");
 
-int n, a[51][51], b[51][51],pozCursor=0, pozCursorMaxim=5;
+int n, a[51][51], b[51][51],pozCursor=0, pozCursorMaxim=6;
 bool areVirus[21];
 char numePersoane[21][21];
+int m,viz[101],nrcomp;//case 5
 
 
 ///Imprumutate de la Miron
@@ -18,20 +19,20 @@ void SetColor(int ForgC);
 
 void SetColor(int ForgC)
 {
-     WORD wColor;
+    WORD wColor;
 
 
-     HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-     CONSOLE_SCREEN_BUFFER_INFO csbi;
+    HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
 
 
-     if(GetConsoleScreenBufferInfo(hStdOut, &csbi))
-     {
+    if(GetConsoleScreenBufferInfo(hStdOut, &csbi))
+    {
 
-          wColor = (csbi.wAttributes & 0xF0) + (ForgC & 0x0F);
-          SetConsoleTextAttribute(hStdOut, wColor);
-     }
-     return;
+        wColor = (csbi.wAttributes & 0xF0) + (ForgC & 0x0F);
+        SetConsoleTextAttribute(hStdOut, wColor);
+    }
+    return;
 }
 
 
@@ -39,9 +40,9 @@ void SetColorAndBackground(int ForgC, int BackC); ///declararea functitiei de hi
 
 void SetColorAndBackground(int ForgC, int BackC)
 {
-     WORD wColor = ((BackC & 0x0F) << 4) + (ForgC & 0x0F);;
-     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), wColor);
-     return;
+    WORD wColor = ((BackC & 0x0F) << 4) + (ForgC & 0x0F);;
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), wColor);
+    return;
 }
 
 
@@ -195,6 +196,43 @@ void afisareInformatiiPacient()//case 4
     cout<<numePersoane[x]<<" are conexiune cu "<<nrInfectatiCunoscuti<<" infectat/i si "<<nrNeinfectatiCunoscuti<<" neinfectat/i"<<endl;
 }
 
+
+
+void DFS(int x)//case 5
+{
+    int i;
+    viz[x]=nrcomp;
+    for(i=1; i<=n; i++)
+        if (a[x][i]==1 && viz[i]==0) DFS(i);
+}
+
+
+void formareGrupuriPacienti()//case 5
+{
+    int i;
+    for(i=1; i<=n; i++)
+        if (viz[i]==0)
+        {
+            nrcomp++;
+            DFS(i);
+        }
+}
+
+
+void afisarePacientiConexi()//case 5
+{
+    int i,j;
+    for(i=1; i<=nrcomp; i++)
+    {
+        cout<<"Grupul "<<i<<": ";
+        for(j=1; j<=n; j++)
+            if (viz[j]==i) cout<<j<<" ";
+        cout<<endl;
+    }
+
+}
+
+
 void setSpace(int x)
 {
     for(int i=1 ; i<=x ; ++i)
@@ -226,10 +264,14 @@ void afisareMeniu(int pozitieCursor)
     setSpace(x);
     pozitieCursor==4 ? cout<<setw(spatii-strlen("/>Inforamatii pacient"))<<"  <5>"<<endl : cout<<endl;
     setSpace(x);
+    cout<<"/>Grupuri de infectati";
+    setSpace(x);
+    pozitieCursor==5 ? cout<<setw(spatii-strlen("/>Grupuri de infectati"))<<"  <6>"<<endl : cout<<endl;
+    setSpace(x);
     SetColor(4);
     cout<<"/>Iesire";
     setSpace(x);
-    pozitieCursor==5 ? cout<<setw(spatii-strlen("/>Iesire"))<<"*6*"<<endl : cout<<endl;
+    pozitieCursor==6 ? cout<<setw(spatii-strlen("/>Iesire"))<<"*7*"<<endl : cout<<endl;
     setSpace(x);
 }
 
@@ -316,6 +358,19 @@ void meniu()
         }
         case 5:
         {
+            system("CLS");
+            SetColor(15);
+
+            formareGrupuriPacienti();
+            afisarePacientiConexi();
+            sagetiMeniu=_getch();
+
+            pozCursor=0;
+            meniu();
+            break;
+        }
+        case 6:
+        {
             break;
         }
         default :
@@ -359,19 +414,19 @@ void logo()
                                                .:~!!77!!!~~^::.            .:^^~!!77777!~:.
                                                    ...                           ...)"<<endl<<endl;
 
-            cout<<"                             ";
+    cout<<"                             ";
 
-            for(int i=1 ;i<=40;i++)
-            {
-                cout<<char(219)<<char(219);
-                usleep(i*700);
-            }
-            cout<<endl<<endl;
-            setSpace(33);
-            SetColor(12);
-            cout<<"<Enter>";
-            char c;
-            c=_getch();
+    for(int i=1 ; i<=40; i++)
+    {
+        cout<<char(219)<<char(219);
+        usleep(i*700);
+    }
+    cout<<endl<<endl;
+    setSpace(33);
+    SetColor(12);
+    cout<<"<Enter>";
+    char c;
+    c=_getch();
 }
 
 void iesire()
@@ -384,20 +439,19 @@ void iesire()
     cout<<"<Iesire>"<<endl;
     cout<<"                                   ";
 
-            for(int i=1 ;i<=40;i++)
-            {
-                cout<<char(219)<<char(219);
-                usleep(i*700);
-            }
+    for(int i=1 ; i<=40; i++)
+    {
+        cout<<char(219)<<char(219);
+        usleep(i*700);
+    }
 }
 
 int main()
 {
-     logo();
+    logo();
     citire();
     matriceDeConexiune();
     meniu();
     iesire();
     SetColorAndBackground(0,0);
 }
-
