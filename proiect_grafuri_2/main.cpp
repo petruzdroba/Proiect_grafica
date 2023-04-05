@@ -45,7 +45,19 @@ void SetColorAndBackground(int ForgC, int BackC)
     return;
 }
 
+///miron <3
 
+void setSpace(int x)
+{
+    for(int i=1 ; i<=x ; ++i)
+        cout<<"  ";
+}
+
+void setEndl(int x)
+{
+    for(int i=1 ; i<=x ; ++i)
+        cout<<endl;
+}
 
 void citire()
 {
@@ -103,10 +115,8 @@ void afisareNume()//case 0
 {
     for(int i=1 ; i<=n ; ++i)
     {
-        cout<<i<<".)  ";
-        if(i<10)
-            cout<<" ";
-        cout<< numePersoane[i]<<endl;
+        cout<<setw(2)<<i<<".)  ";
+        cout<<numePersoane[i]<<endl;
     }
 }
 
@@ -115,9 +125,7 @@ void afisareStatusPacienti()//case 1
     for(int i=1; i<=n; ++i)
     {
         SetColor(15);
-        cout<<i<<".)  ";
-        if(i<10)
-            cout<<" ";
+        cout<<setw(2)<<i<<".)  ";
         cout<<numePersoane[i]<<setw(25-strlen(numePersoane[i]));
         if(areVirus[i])
         {
@@ -134,13 +142,26 @@ void afisareStatusPacienti()//case 1
 
 void afisareStatusContact()//case 2
 {
-    for(int i=1; i<n ; ++i)
+    int x=0;
+    setEndl(3);
+    setSpace(31);
+    cout<<"<Status contact direct>"<<endl;
+    setEndl(3);
+    for(int i=1; i<=n ; ++i)
     {
-        for(int j=i+1 ; j<=n ; ++j)
+        x=0;
+        setSpace(28);
+        for(int j=1 ; j<=n ; ++j)
         {
-            a[i][j] ? cout<<numePersoane[i]<<setw(45-strlen(numePersoane[i]))<<" a avut contact direct cu "<<setw(45-strlen(" nu a avut contact direct cu "))<<numePersoane[j] : cout<<numePersoane[i]<<setw(45-strlen(numePersoane[i]))
-                          <<" nu a avut contact direct cu "<<setw(45-strlen(" nu a avut contact direct cu "))<<numePersoane[j];
-            cout<<endl;
+            if(a[i][j])
+            {
+                SetColor(4);
+                if(!x)
+                    cout<<numePersoane[i]<<":"<<setw(15-strlen(numePersoane[i]));
+                SetColor(15);
+                cout<<numePersoane[j]<<" ";
+                x=1;
+            }
         }
         cout<<endl;
     }
@@ -193,6 +214,8 @@ void afisareInformatiiPacient()//case 4
         }
     }
     system("CLS");
+    setEndl(15);
+    setSpace(25);
     cout<<numePersoane[x]<<" are conexiune cu "<<nrInfectatiCunoscuti<<" infectat/i si "<<nrNeinfectatiCunoscuti<<" neinfectat/i"<<endl;
 }
 
@@ -200,43 +223,39 @@ void afisareInformatiiPacient()//case 4
 
 void DFS(int x)//case 5
 {
-    int i;
     viz[x]=nrcomp;
-    for(i=1; i<=n; i++)
-        if (a[x][i]==1 && viz[i]==0) DFS(i);
+    for(int i=1; i<=n; ++i)
+    {
+        if (a[x][i]==1 && viz[i]==0)
+            DFS(i);
+    }
 }
 
 
 void formareGrupuriPacienti()//case 5
 {
-    int i;
-    for(i=1; i<=n; i++)
+    for(int i=1; i<=n; ++i)
+    {
         if (viz[i]==0)
         {
             nrcomp++;
             DFS(i);
         }
+    }
 }
 
 
 void afisarePacientiConexi()//case 5
 {
-    int i,j;
-    for(i=1; i<=nrcomp; i++)
+    for(int i=1; i<=nrcomp; ++i)
     {
         cout<<"Grupul "<<i<<": ";
-        for(j=1; j<=n; j++)
+        for(int j=1; j<=n; ++j)
+        {
             if (viz[j]==i) cout<<j<<" ";
+        }
         cout<<endl;
     }
-
-}
-
-
-void setSpace(int x)
-{
-    for(int i=1 ; i<=x ; ++i)
-        cout<<"  ";
 }
 
 void afisareMeniu(int pozitieCursor)
@@ -266,13 +285,16 @@ void afisareMeniu(int pozitieCursor)
     setSpace(x);
     cout<<"/>Grupuri de infectati";
     setSpace(x);
-    pozitieCursor==5 ? cout<<setw(spatii-strlen("/>Grupuri de infectati"))<<"  <6>"<<endl : cout<<endl;
+    pozitieCursor==5 ? cout<<setw(spatii-strlen("/>Grupuri de infectati"))<<"<6>"<<endl : cout<<endl;
     setSpace(x);
     SetColor(4);
     cout<<"/>Iesire";
     setSpace(x);
     pozitieCursor==6 ? cout<<setw(spatii-strlen("/>Iesire"))<<"*7*"<<endl : cout<<endl;
-    setSpace(x);
+    SetColor(8);
+    setEndl(22);
+    cout<<"<<Folositi meniul cu 'w' si 's'>>"<<endl;
+    SetColor(4);
 }
 
 void meniu()
@@ -360,11 +382,9 @@ void meniu()
         {
             system("CLS");
             SetColor(15);
-
             formareGrupuriPacienti();
             afisarePacientiConexi();
             sagetiMeniu=_getch();
-
             pozCursor=0;
             meniu();
             break;
@@ -374,11 +394,27 @@ void meniu()
             break;
         }
         default :
+        {
             break;
         }
+        }
+        break;
+    }
+    case char(27):
+    {
+        break;
     }
     default:
+    {
+        system("CLS");
+        SetColor(4);
+        setEndl(12);
+        setSpace(33);
+        cout<<"<!Tasta invalida!>";
+        sleep(1);
+        meniu();
         break;
+    }
     }
 }
 
@@ -415,7 +451,6 @@ void logo()
                                                    ...                           ...)"<<endl<<endl;
 
     cout<<"                             ";
-
     for(int i=1 ; i<=40; i++)
     {
         cout<<char(219)<<char(219);
@@ -432,13 +467,17 @@ void logo()
 void iesire()
 {
     system("CLS");
-    cout<<endl<<endl<<endl<<endl<<endl<<endl<<endl;
-    cout<<endl<<endl<<endl<<endl<<endl<<endl<<endl;
-    cout<<endl<<endl<<endl<<endl<<endl;
+    setEndl(9);
+    cout<<R"(
+                                                                    ___  _  __ __ _____
+                                                                   / _/ | |/,'/ //_  _/
+                                                                  / _/  /  / / /  / /
+                                                                 /___/,'_n_\/_/  /_/
+
+)"<<endl;
     setSpace(35);
     cout<<"<Iesire>"<<endl;
     cout<<"                                   ";
-
     for(int i=1 ; i<=40; i++)
     {
         cout<<char(219)<<char(219);
